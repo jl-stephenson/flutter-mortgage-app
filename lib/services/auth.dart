@@ -7,6 +7,22 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Future<UserCredential?> signInWithEmailPassword(
+      String email, String password) async {
+    try {
+      final UserCredential userCredential =
+          await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      return userCredential;
+    } catch (e) {
+      print('Sign in with email & password failed: $e');
+      return null;
+    }
+  }
+
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -48,5 +64,3 @@ class AuthService {
 
   void signOut() {}
 }
-
-

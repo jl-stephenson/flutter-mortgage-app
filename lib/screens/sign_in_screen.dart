@@ -12,7 +12,29 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  final AuthService authService = AuthService();
+  final AuthService _authService = AuthService();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  Future<void> _loginWithEmailPassword() async {
+    final String email = _emailController.text.trim();
+    final String password = _passwordController.text.trim();
+
+    final UserCredential? userCredential =
+        await _authService.signInWithEmailPassword(email, password);
+
+    if (userCredential != null) {
+      // If login successful, navigate to the new screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Login failed. Please try again.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,21 +44,46 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: "Email"),
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              controller: _passwordController,
+              decoration: const InputDecoration(labelText: 'Password'),
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => _loginWithEmailPassword(),
+              child: Text('Login with email and password'),
+            ),
+            const SizedBox(height: 20),
             SignInButton(Buttons.google, text: 'Sign in with Google',
                 onPressed: () async {
-               UserCredential? userCredential = await authService.signInWithGoogle();
+              UserCredential? userCredential =
+                  await _authService.signInWithGoogle();
 
-                if (userCredential != null) {
-                  // If login successful, navigate to the new screen
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
-                }
+              if (userCredential != null) {
+                // If login successful, navigate to the new screen
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              }
             }),
           ],
         ),
       ),
     );
   }
+  @override
+void dispose() {
+  _emailController.dispose();
+  _passwordController.dispose();
+  super.dispose();
 }
+}
+
+
