@@ -5,13 +5,13 @@ import 'package:flutter_mortgage_calc/services/auth.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  SignInScreenState createState() => SignInScreenState();
 }
 
-class _SignInScreenState extends State<SignInScreen> {
+class SignInScreenState extends State<SignInScreen> {
   final AuthService _authService = AuthService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -27,8 +27,9 @@ class _SignInScreenState extends State<SignInScreen> {
     final UserCredential? userCredential =
         await _authService.signInWithEmailPassword(email, password);
 
+    if (!mounted) return;
+
     if (userCredential != null) {
-      // If login successful, navigate to the new screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomePage()),

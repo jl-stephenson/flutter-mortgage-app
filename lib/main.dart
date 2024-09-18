@@ -15,13 +15,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => CalculationService()),
       ],
-      child: const App(),
+      child: App(),
     ),
   );
 }
 
 class App extends StatelessWidget {
-  const App({super.key});
+  App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class App extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: const Color.fromRGBO(19, 48, 65, 1.0)),
             fontFamily: 'PlusJakartaSans'),
-        home: const SignInScreen(),
+        home: SignInScreen(),
       ),
     );
   }

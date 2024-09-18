@@ -30,17 +30,15 @@ class MortgageFormState extends State<MortgageForm> {
   }
 
   Future<void> _submitForm() async {
-    double amount = double.parse(_amountController.text);
+    double amount = double.parse(_amountController.text.replaceAll(',', ''));
     int years = int.parse(_yearsController.text);
     double interest = double.parse(_interestController.text);
-    String mortgageType =
-        _character == MortgageType.repayment ? 'repayment' : 'interest';
-    await context
-        .read<CalculationService>()
-        .calculateRepayments(amount, years, interest, mortgageType);
+
+    await context.read<CalculationService>().calculateRepayments(amount, years,
+        interest, _selectedMortgageType.toString().split('.').last);
   }
 
-  MortgageType? _character = MortgageType.repayment;
+  MortgageType? _selectedMortgageType = MortgageType.repayment;
 
   @override
   Widget build(BuildContext context) {
@@ -75,9 +73,10 @@ class MortgageFormState extends State<MortgageForm> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a mortgage amount';
-                    } else if (num.tryParse(value) == null) {
+                    } else if (num.tryParse(value.replaceAll(',', '')) ==
+                        null) {
                       return 'Please enter a valid number';
-                    } else if (double.parse(value) <= 0) {
+                    } else if (double.parse(value.replaceAll(',', '')) <= 0) {
                       return 'Please enter a positive number';
                     }
                     return null;
@@ -143,16 +142,19 @@ class MortgageFormState extends State<MortgageForm> {
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(width: 1.0, color: Colors.black)),
-                child: ListTile(
-                  title: const Text('Repayment'),
-                  leading: Radio<MortgageType>(
-                      value: MortgageType.repayment,
-                      groupValue: _character,
-                      onChanged: (MortgageType? value) {
-                        setState(() {
-                          _character = value;
-                        });
-                      }),
+                child: Semantics(
+                  label: 'Mortgage Type: Repayment',
+                  child: ListTile(
+                    title: const Text('Repayment'),
+                    leading: Radio<MortgageType>(
+                        value: MortgageType.repayment,
+                        groupValue: _selectedMortgageType,
+                        onChanged: (MortgageType? value) {
+                          setState(() {
+                            _selectedMortgageType = value;
+                          });
+                        }),
+                  ),
                 ),
               ),
               const SizedBox(
@@ -161,16 +163,19 @@ class MortgageFormState extends State<MortgageForm> {
               Container(
                 decoration: BoxDecoration(
                     border: Border.all(width: 1.0, color: Colors.black)),
-                child: ListTile(
-                  title: const Text('Interest Only'),
-                  leading: Radio<MortgageType>(
-                      value: MortgageType.interest,
-                      groupValue: _character,
-                      onChanged: (MortgageType? value) {
-                        setState(() {
-                          _character = value;
-                        });
-                      }),
+                child: Semantics(
+                  label: 'Mortgage Type: Interest Only',
+                  child: ListTile(
+                    title: const Text('Interest Only'),
+                    leading: Radio<MortgageType>(
+                        value: MortgageType.interest,
+                        groupValue: _selectedMortgageType,
+                        onChanged: (MortgageType? value) {
+                          setState(() {
+                            _selectedMortgageType = value;
+                          });
+                        }),
+                  ),
                 ),
               ),
               const SizedBox(
