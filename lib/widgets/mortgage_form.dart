@@ -57,7 +57,7 @@ class MortgageFormState extends State<MortgageForm> {
                 children: [
                   const Text("Mortgage Calculator",
                       style: TextStyle(fontSize: 24)),
-                  ElevatedButton(
+                  TextButton(
                     onPressed: _clearForm,
                     child: const Text('Clear all'),
                   ),

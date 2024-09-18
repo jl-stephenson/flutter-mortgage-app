@@ -10,10 +10,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MultiProvider(providers: [ChangeNotifierProvider(create: (_) => CalculationService()),
-  ],
-  child: const App(),
-  ),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CalculationService()),
+      ],
+      child: const App(),
+    ),
   );
 }
 
