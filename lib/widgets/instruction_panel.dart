@@ -6,17 +6,8 @@ class InstructionPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: double.infinity,
-      padding: const EdgeInsets.all(40),
-      decoration: const BoxDecoration(
-        color: Color.fromRGBO(19, 48, 65, 1.0),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(100),
-        ),
-      ),
-      child: Center(
-          child: Column(
+    return Center(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset('images/illustration-empty.svg'),
@@ -35,7 +26,7 @@ class InstructionPanel extends StatelessWidget {
             textAlign: TextAlign.center,
           )
         ],
-      )),
+      ),
     );
   }
 }

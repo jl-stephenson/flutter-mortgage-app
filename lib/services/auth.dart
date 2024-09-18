@@ -8,18 +8,54 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<UserCredential?> signInWithEmailPassword(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     try {
       final UserCredential userCredential =
           await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-
       return userCredential;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
     } catch (e) {
       print('Sign in with email & password failed: $e');
       return null;
+    }
+  }
+
+  Future<UserCredential?> registerWithEmailPassword(
+    String email,
+    String password,
+  ) async {
+    try {
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        addUserToFirestore(user);
+      }
+
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password is too weak');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print('Error in creating new user: $e');
     }
   }
 
@@ -46,13 +82,7 @@ class AuthService {
       final User? user = userCredential.user;
 
       if (user != null) {
-        await _firestore.collection('users').doc(user.uid).set({
-          'uid': user.uid,
-          'email': user.email,
-          'displayName': user.displayName,
-          'photoURL': user.photoURL,
-          'lastSignInTime': DateTime.now(),
-        }, SetOptions(merge: true));
+        addUserToFirestore(user);
       }
 
       return userCredential;
@@ -62,5 +92,24 @@ class AuthService {
     }
   }
 
-  void signOut() {}
+  Future<void> addUserToFirestore(User user) async {
+    try {
+      final userDoc = _firestore.collection('users').doc(user.uid);
+
+      await userDoc.set({
+        'uid': user.uid,
+        'email': user.email,
+        'displayName': user.displayName ?? '',
+        'photoURL': user.photoURL ?? '',
+        'createdAt': user.metadata.creationTime,
+        'lastSignIn': user.metadata.lastSignInTime,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print('Error adding user to Firestore: $e');
+    }
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
 }

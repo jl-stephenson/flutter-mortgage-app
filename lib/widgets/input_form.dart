@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mortgage_calc/services/calculation.dart';
+import 'package:provider/provider.dart';
 
 enum MortgageType { repayment, interest }
 
@@ -15,6 +17,28 @@ class MortgageForm extends StatefulWidget {
 
 class MortgageFormState extends State<MortgageForm> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _yearsController = TextEditingController();
+  final TextEditingController _interestController = TextEditingController();
+  final CalculationService calculationService = CalculationService();
+
+  Future<void> _clearForm() async {
+    _amountController.clear();
+    _yearsController.clear();
+    _interestController.clear();
+    await context.read<CalculationService>().hideResults();
+  }
+
+  Future<void> _submitForm() async {
+    double amount = double.parse(_amountController.text);
+    int years = int.parse(_yearsController.text);
+    double interest = double.parse(_interestController.text);
+    String mortgageType =
+        _character == MortgageType.repayment ? 'repayment' : 'interest';
+    await context
+        .read<CalculationService>()
+        .calculateRepayments(amount, years, interest, mortgageType);
+  }
 
   MortgageType? _character = MortgageType.repayment;
 
@@ -34,9 +58,7 @@ class MortgageFormState extends State<MortgageForm> {
                   const Text("Mortgage Calculator",
                       style: TextStyle(fontSize: 24)),
                   ElevatedButton(
-                    onPressed: () {
-                      print("Clicked!");
-                    },
+                    onPressed: _clearForm,
                     child: const Text('Clear all'),
                   ),
                 ],
@@ -45,6 +67,7 @@ class MortgageFormState extends State<MortgageForm> {
                 height: 40,
               ),
               TextFormField(
+                  controller: _amountController,
                   decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Mortgage Amount',
@@ -52,6 +75,10 @@ class MortgageFormState extends State<MortgageForm> {
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a mortgage amount';
+                    } else if (num.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    } else if (double.parse(value) <= 0) {
+                      return 'Please enter a positive number';
                     }
                     return null;
                   }),
@@ -64,6 +91,7 @@ class MortgageFormState extends State<MortgageForm> {
                   children: [
                     Expanded(
                       child: TextFormField(
+                          controller: _yearsController,
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Mortgage Term',
@@ -71,6 +99,10 @@ class MortgageFormState extends State<MortgageForm> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter a number of years';
+                            } else if (num.tryParse(value) == null) {
+                              return 'Please enter a valid number';
+                            } else if (int.parse(value) <= 0) {
+                              return 'Please enter a positive number';
                             }
                             return null;
                           }),
@@ -80,6 +112,7 @@ class MortgageFormState extends State<MortgageForm> {
                     ),
                     Expanded(
                       child: TextFormField(
+                          controller: _interestController,
                           decoration: const InputDecoration(
                               border: OutlineInputBorder(),
                               labelText: 'Interest Rate',
@@ -87,6 +120,10 @@ class MortgageFormState extends State<MortgageForm> {
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter an interest rate';
+                            } else if (num.tryParse(value) == null) {
+                              return 'Please enter a valid number';
+                            } else if (double.parse(value) <= 0) {
+                              return 'Please enter a positive number';
                             }
                             return null;
                           }),
@@ -97,9 +134,9 @@ class MortgageFormState extends State<MortgageForm> {
               const SizedBox(
                 height: 30,
               ),
-              Align(
+              const Align(
                   alignment: Alignment.centerLeft,
-                  child: const Text('Mortgage Type')),
+                  child: Text('Mortgage Type')),
               const SizedBox(
                 height: 12,
               ),
@@ -144,6 +181,7 @@ class MortgageFormState extends State<MortgageForm> {
                 child: ElevatedButton.icon(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
+                      _submitForm();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Processing Data")),
                       );
@@ -154,7 +192,7 @@ class MortgageFormState extends State<MortgageForm> {
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40.0, vertical: 20.0),
-                    backgroundColor: Color.fromRGBO(216, 219, 47, 1.0),
+                    backgroundColor: const Color.fromRGBO(216, 219, 47, 1.0),
                   ),
                 ),
               )
@@ -163,5 +201,13 @@ class MortgageFormState extends State<MortgageForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    _yearsController.dispose();
+    _interestController.dispose();
+    super.dispose();
   }
 }
