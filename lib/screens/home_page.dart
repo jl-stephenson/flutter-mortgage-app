@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mortgage_calc/screens/sign_in_screen.dart';
 import 'package:flutter_mortgage_calc/services/auth.dart';
 import 'package:flutter_mortgage_calc/services/calculation.dart';
-import 'package:flutter_mortgage_calc/widgets/input_form.dart';
+import 'package:flutter_mortgage_calc/widgets/mortgage_form.dart';
 import 'package:flutter_mortgage_calc/widgets/instruction_panel.dart';
 import 'package:flutter_mortgage_calc/widgets/results_panel.dart';
 import 'package:provider/provider.dart';
