@@ -33,7 +33,6 @@ migrate_working_dir/
 
 #.env
 api_keys.json
-lib/firebase_options.dart
 
 # Symbolication related
 app.*.symbols
