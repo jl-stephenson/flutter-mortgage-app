@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_mortgage_calc/services/calculation.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'dart:html';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
