@@ -10,7 +10,7 @@ class InstructionPanel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          WebsafeSvg.asset('illustration-empty.svg'),
+          WebsafeSvg.asset('assets/images/illustration-empty.svg'),
           const SizedBox(
             height: 16,
           ),
