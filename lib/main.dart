@@ -4,12 +4,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_mortgage_calc/services/calculation.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'dart:html';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
     MultiProvider(
       providers: [
@@ -34,7 +37,7 @@ class App extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(
                 seedColor: const Color.fromRGBO(19, 48, 65, 1.0)),
             fontFamily: 'PlusJakartaSans'),
-        home: SignInScreen(),
+        home: const SignInScreen(),
       ),
     );
   }

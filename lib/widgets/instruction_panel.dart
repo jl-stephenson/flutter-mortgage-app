@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:websafe_svg/websafe_svg.dart';
 
 class InstructionPanel extends StatelessWidget {
   const InstructionPanel({super.key});
@@ -10,7 +10,7 @@ class InstructionPanel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset('images/illustration-empty.svg'),
+          WebsafeSvg.asset('illustration-empty.svg'),
           const SizedBox(
             height: 16,
           ),
