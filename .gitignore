@@ -54,3 +54,5 @@ macos/Podfile
 
 flutter-mortgage-app.git
 flutter-mortgage-app.git.bfg-report
+
+.firebase/
