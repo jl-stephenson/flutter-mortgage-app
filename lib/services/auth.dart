@@ -1,12 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String googleClientId =
       String.fromEnvironment('GOOGLE_SIGNIN_CLIENT_ID');
+  final Logger logger = Logger();
 
   Future<UserCredential?> signInWithEmailPassword(
     String email,
@@ -21,14 +23,15 @@ class AuthService {
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        logger.e('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        logger.e('Wrong password provided for that user.');
       }
     } catch (e) {
-      print('Sign in with email & password failed: $e');
+      logger.e('Sign in with email & password failed: $e');
       return null;
     }
+    return null;
   }
 
   Future<UserCredential?> registerWithEmailPassword(
@@ -51,13 +54,14 @@ class AuthService {
       return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password is too weak');
+        logger.e('The password is too weak');
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        logger.e('The account already exists for that email.');
       }
     } catch (e) {
-      print('Error in creating new user: $e');
+      logger.e('Error in creating new user: $e');
     }
+    return null;
   }
 
   Future<UserCredential?> signInWithGoogle() async {
@@ -92,7 +96,7 @@ class AuthService {
 
       return userCredential;
     } catch (e) {
-      print('Error during Google Sign In: $e');
+      logger.e('Error during Google Sign In: $e');
       return null;
     }
   }
@@ -110,7 +114,7 @@ class AuthService {
         'lastSignIn': user.metadata.lastSignInTime,
       }, SetOptions(merge: true));
     } catch (e) {
-      print('Error adding user to Firestore: $e');
+      logger.e('Error adding user to Firestore: $e');
     }
   }
 

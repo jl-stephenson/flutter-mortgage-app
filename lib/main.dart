@@ -17,13 +17,13 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => CalculationService()),
       ],
-      child: App(),
+      child: const App(),
     ),
   );
 }
 
 class App extends StatelessWidget {
-  App({super.key});
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {

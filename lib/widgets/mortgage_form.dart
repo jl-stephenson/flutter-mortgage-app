@@ -42,177 +42,197 @@ class MortgageFormState extends State<MortgageForm> {
 
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.sizeOf(context).width;
+    bool isSmallScreen = screenSize < 950;
+
     return Container(
-      height: 600.0,
-      padding: const EdgeInsets.all(40),
-      child: Center(
-        child: Form(
-          key: _formKey,
-          child: Center(
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("Mortgage Calculator",
-                      style: TextStyle(fontSize: 24)),
-                  TextButton(
-                    onPressed: _clearForm,
-                    child: const Text('Clear all'),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              TextFormField(
-                  controller: _amountController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Mortgage Amount',
-                      prefixText: '£'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a mortgage amount';
-                    } else if (num.tryParse(value.replaceAll(',', '')) ==
-                        null) {
-                      return 'Please enter a valid number';
-                    } else if (double.parse(value.replaceAll(',', '')) <= 0) {
-                      return 'Please enter a positive number';
-                    }
-                    return null;
-                  }),
-              const SizedBox(
-                height: 24,
-              ),
-              Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                          controller: _yearsController,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Mortgage Term',
-                              suffixText: 'years'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a number of years';
-                            } else if (num.tryParse(value) == null) {
-                              return 'Please enter a valid number';
-                            } else if (int.parse(value) <= 0) {
-                              return 'Please enter a positive number';
-                            }
-                            return null;
-                          }),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: TextFormField(
-                          controller: _interestController,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Interest Rate',
-                              suffixText: '%'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter an interest rate';
-                            } else if (num.tryParse(value) == null) {
-                              return 'Please enter a valid number';
-                            } else if (double.parse(value) <= 0) {
-                              return 'Please enter a positive number';
-                            }
-                            return null;
-                          }),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text('Mortgage Type')),
-              const SizedBox(
-                height: 12,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1.0, color: Colors.black)),
-                child: Semantics(
-                  label: 'Mortgage Type: Repayment',
-                  child: ListTile(
-                    title: const Text('Repayment'),
-                    leading: Radio<MortgageType>(
-                        value: MortgageType.repayment,
-                        groupValue: _selectedMortgageType,
-                        onChanged: (MortgageType? value) {
-                          setState(() {
-                            _selectedMortgageType = value;
-                          });
-                        }),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    border: Border.all(width: 1.0, color: Colors.black)),
-                child: Semantics(
-                  label: 'Mortgage Type: Interest Only',
-                  child: ListTile(
-                    title: const Text('Interest Only'),
-                    leading: Radio<MortgageType>(
-                        value: MortgageType.interest,
-                        groupValue: _selectedMortgageType,
-                        onChanged: (MortgageType? value) {
-                          setState(() {
-                            _selectedMortgageType = value;
-                          });
-                        }),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _submitForm();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Processing Data")),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.calculate),
-                  label: const Text("Calculate Repayments"),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40.0, vertical: 20.0),
-                    backgroundColor: const Color.fromRGBO(216, 219, 47, 1.0),
-                  ),
-                ),
-              )
-            ]),
-          ),
+      padding:
+          isSmallScreen ? const EdgeInsets.all(24) : const EdgeInsets.all(40),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: isSmallScreen
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
+          children: [
+            buildHeader(isSmallScreen),
+            SizedBox(height: isSmallScreen ? 24 : 40),
+            buildMortgageAmountField(),
+            const SizedBox(height: 24),
+            buildTermAndRateFields(isSmallScreen),
+            SizedBox(height: isSmallScreen ? 24 : 30),
+            buildMortgageTypeSection(),
+            SizedBox(height: isSmallScreen ? 24 : 40),
+            buildSubmitButton(context, isSmallScreen),
+          ],
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _amountController.dispose();
-    _yearsController.dispose();
-    _interestController.dispose();
-    super.dispose();
+  Widget buildHeader(bool isSmallScreen) {
+    return isSmallScreen
+        ? Align(
+            alignment: Alignment.centerLeft,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Mortgage Calculator",
+                    style: TextStyle(fontSize: 24)),
+                TextButton(
+                    onPressed: _clearForm,
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                    ),
+                    child: const Text('Clear all')),
+              ],
+            ),
+          )
+        : Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            const Text("Mortgage Calculator", style: TextStyle(fontSize: 24)),
+            TextButton(
+              onPressed: _clearForm,
+              child: const Text('Clear all'),
+            ),
+          ]);
+  }
+
+  Widget buildMortgageAmountField() {
+    return TextFormField(
+        controller: _amountController,
+        decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Mortgage Amount',
+            prefixText: '£'),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter a mortgage amount';
+          } else if (num.tryParse(value.replaceAll(',', '')) == null) {
+            return 'Please enter a valid number';
+          } else if (double.parse(value.replaceAll(',', '')) <= 0) {
+            return 'Please enter a positive number';
+          }
+          return null;
+        });
+  }
+
+  Widget buildTermAndRateFields(bool isSmallScreen) {
+    return isSmallScreen
+        ? Column(
+            children: [
+              buildTermField(),
+              const SizedBox(height: 24),
+              buildInterestRateField(),
+            ],
+          )
+        : Row(
+            children: [
+              Expanded(child: buildTermField()),
+              const SizedBox(width: 10),
+              Expanded(child: buildInterestRateField()),
+            ],
+          );
+  }
+
+  Widget buildTermField() {
+    return TextFormField(
+      controller: _yearsController,
+      decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Mortgage Term',
+          suffixText: 'years'),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a number of years';
+        } else if (num.tryParse(value) == null) {
+          return 'Please enter a valid number';
+        } else if (int.parse(value) <= 0) {
+          return 'Please enter a positive number';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildInterestRateField() {
+    return TextFormField(
+      controller: _interestController,
+      decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Interest Rate',
+          suffixText: '%'),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter an interest rate';
+        } else if (num.tryParse(value) == null) {
+          return 'Please enter a valid number';
+        } else if (double.parse(value) <= 0) {
+          return 'Please enter a positive number';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildMortgageTypeSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text('Mortgage Type'),
+        ),
+        const SizedBox(height: 12),
+        buildMortgageTypeOption(MortgageType.repayment, 'Repayment'),
+        const SizedBox(height: 12),
+        buildMortgageTypeOption(MortgageType.interest, 'Interest Only'),
+      ],
+    );
+  }
+
+  Widget buildMortgageTypeOption(MortgageType type, String label) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 1.0, color: Colors.black),
+      ),
+      child: Semantics(
+        label: 'Mortgage Type: $label',
+        child: ListTile(
+          title: Text(label),
+          leading: Radio<MortgageType>(
+              value: type,
+              groupValue: _selectedMortgageType,
+              onChanged: (MortgageType? value) {
+                setState(() {
+                  _selectedMortgageType = value;
+                });
+              }),
+        ),
+      ),
+    );
+  }
+
+  Widget buildSubmitButton(BuildContext context, bool isSmallScreen) {
+    final button = ElevatedButton.icon(
+      icon: const Icon(Icons.calculate),
+      label: const Text('Calculate Repayments'),
+      style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+          backgroundColor: const Color.fromRGBO(216, 219, 47, 1.0)),
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          _submitForm();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Processing Data')),
+          );
+        }
+      },
+    );
+
+    return isSmallScreen
+        ? SizedBox(width: double.infinity, child: button)
+        : Align(alignment: Alignment.centerLeft, child: button);
   }
 }

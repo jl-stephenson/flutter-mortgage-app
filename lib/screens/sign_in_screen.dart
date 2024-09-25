@@ -32,7 +32,7 @@ class SignInScreenState extends State<SignInScreen> {
     if (userCredential != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -52,7 +52,7 @@ class SignInScreenState extends State<SignInScreen> {
       // If login successful, navigate to the new screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -71,7 +71,7 @@ class SignInScreenState extends State<SignInScreen> {
           color: Colors.white,
           child: Form(
             key: _formKey,
-            child: Container(
+            child: SizedBox(
               width: 400,
               height: 500,
               child: Padding(
@@ -159,7 +159,7 @@ class SignInScreenState extends State<SignInScreen> {
                         // If login successful, navigate to the new screen
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomePage()),
+                          MaterialPageRoute(builder: (context) => const HomePage()),
                         );
                       }
                     }),

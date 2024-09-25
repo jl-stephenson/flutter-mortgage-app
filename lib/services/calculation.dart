@@ -4,12 +4,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_mortgage_calc/models/mortgage_input.dart';
+import 'package:logger/logger.dart';
 
 class CalculationService extends ChangeNotifier {
   bool _isResults = false;
   String _formattedMonthlyRepayment = '';
   String _formattedTotalRepayment = '';
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Logger logger = Logger();
 
   bool get isResults => _isResults;
   String get formattedMonthlyRepayment => _formattedMonthlyRepayment;
@@ -23,7 +25,7 @@ class CalculationService extends ChangeNotifier {
           .collection('inputs')
           .add(input.toFirestore());
     } catch (e) {
-      print('Failed to save input: $e');
+      logger.e('Failed to save input: $e');
     }
   }
 
@@ -62,7 +64,7 @@ class CalculationService extends ChangeNotifier {
         userID: user.uid,
         timestamp: DateTime.now(),
       );
-      await saveUserInput(input);
+      // await saveUserInput(input);
     }
 
     _isResults = true;

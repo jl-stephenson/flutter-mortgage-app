@@ -30,7 +30,7 @@ class ResultsPanel extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                padding: EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(32.0),
                 decoration: BoxDecoration(
                   color: const Color.fromRGBO(0, 0, 0, 0.25),
                   borderRadius: BorderRadius.circular(8),
@@ -55,7 +55,7 @@ class ResultsPanel extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Divider(
+                    const Divider(
                       color: Color.fromRGBO(154, 190, 213, 0.25),
                       thickness: 1.0,
                     ),

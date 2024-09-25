@@ -6,16 +6,24 @@ class InstructionPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.sizeOf(context).width;
+
+    double fontSizeLarge = screenWidth < 950 ? 20 : 24;
+    double verticalSpacing = screenWidth < 950 ? 12 : 16;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          WebsafeSvg.asset('assets/images/illustration-empty.svg'),
-          const SizedBox(
-            height: 16,
+          SizedBox(
+              width: 192.0,
+              height: 192.0,
+              child: WebsafeSvg.asset('assets/images/illustration-empty.svg')),
+          SizedBox(
+            height: verticalSpacing,
           ),
-          const Text("Results shown here",
-              style: TextStyle(color: Colors.white, fontSize: 24)),
+          Text("Results shown here",
+              style: TextStyle(color: Colors.white, fontSize: fontSizeLarge)),
           const SizedBox(
             height: 16,
           ),
