@@ -70,8 +70,10 @@ class AuthService {
         clientId: googleClientId,
       );
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      GoogleSignInAccount? googleUser = await googleSignIn.signInSilently();
 
+      googleUser ??= await googleSignIn.signIn();
+      
       if (googleUser == null) {
         throw Exception('Sign in unsuccessful');
       }
